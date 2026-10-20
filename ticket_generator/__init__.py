@@ -1,0 +1,1 @@
+"""Desktop examination ticket generator."""
