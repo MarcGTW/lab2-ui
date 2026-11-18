@@ -1,12 +1,17 @@
 import argparse
 import logging
 from pathlib import Path
+import sys
 import tkinter as tk
 
 from ticket_generator.gui import TicketApp
 
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="Генератор экзаменационных билетов")
     parser.add_argument("--data-dir", type=Path, default=Path(__file__).resolve().parent,
                         help="Папка с students.xlsx, tickets.docx и results.xlsx")

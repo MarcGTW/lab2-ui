@@ -1,83 +1,102 @@
-# Лабораторная работа №2 — генератор билетов
+# Laboratory Work 2 — Examination Ticket Generator
 
-Десктопное приложение на Python и Tkinter. Читает студентов из Excel, билеты из Word, сохраняет полную историю выдачи в Excel.
+A desktop application built with Python and Tkinter/ttk. It reads student lists from Excel, examination tickets from Word, and persists a complete assignment history into an Excel journal.
 
-## Запуск
+## Features
 
-В уже настроенном Python 3.10+ с Tkinter выполните из папки проекта:
+- **Modern Dashboard UI**: Sleek card-based interface with dynamic theme switching (Dark 🌙 / Light ☀️ modes).
+- **Group Progress Tracking**: Visual progress bar showing the percentage and count of students who have already received their tickets.
+- **Smart Candidate Profile & Live Search**: Fast interactive filtering for student selection, plus automatic status badges distinguishing first-time exams (`✨ First Issue`) from repeat attempts (`⚠️ Reissue`).
+- **Live Assignment History**: An interactive real-time table displaying past ticket assignments directly from `results.xlsx` with filtering and detailed inspection on double-click.
+- **Official Examination Ticket Window**: Formatted as an academic exam slip with question cards, quick copy-to-clipboard, export to `.txt`, and immediate focus restoration.
+- **Atomic Persistence**: Thread-safe, atomic file replacement using temporary workbooks to prevent journal corruption.
+- **Keyboard Hotkeys**: `Enter` to generate, `Esc` to close ticket modal, `F5` / `Ctrl+R` to reload sources, `Ctrl+T` to toggle theme, `Ctrl+O` to open the journal in Excel.
+
+## Getting Started
+
+### Prerequisites
+
+Python 3.10+ with Tkinter installed.
+
+### Installation
+
+Clone the repository and install required dependencies:
 
 ```powershell
 py -m pip install -r requirements.txt
+```
+
+### Running the Application
+
+To run the application from the project root:
+
+```powershell
 py main.py
 ```
 
-Если окружение активировано, вместо `py` используйте `python`. Файлы по умолчанию берутся из папки `main.py`, независимо от текущего каталога терминала. Другую папку можно указать так:
+*(If using an activated virtual environment, replace `py` with `python`).*
+
+By default, files are loaded from the application's directory. To specify a custom working folder:
 
 ```powershell
 py main.py --data-dir "C:\ExamData"
 ```
 
-В проект включены **демонстрационные** `students.xlsx` и `tickets.docx`: две группы со студентами, пустая группа и пять билетов. Замените их своими файлами до реального использования. Демонстрационные файлы можно создать в отдельной папке командой `py create_demo_data.py --data-dir demo`; существующие входные файлы скрипт не перезаписывает.
+Demo files (`students.xlsx` and `tickets.docx`) are included: two groups with students, an empty group, and sample tickets. To generate fresh demo files in a separate folder without overwriting existing ones:
 
-## Использование
-
-1. Выберите группу, затем студента. Кнопка генерации станет доступной.
-2. Нажмите «Сгенерировать билет». После сохранения журнала откроется окно с номером и тремя вопросами.
-3. Нажмите Esc или закройте окно результата. Основное окно останется открытым; можно выбрать следующего студента.
-
-Повторное обращение добавляет новую строку с билетом из **первой** записи этого студента и отметкой «да». Группа, фамилия и имя вместе определяют студента. Повторные выдачи и перезапуск приложения не меняют назначенный номер. Студенты могут получать одинаковые билеты.
-
-## Форматы файлов
-
-`students.xlsx`: каждый лист — группа, имя листа — имя группы. Строка 1 — заголовки; с строки 2 колонка A содержит фамилию, B — имя. Пустые строки пропускаются; неполные имена логируются и пропускаются. Пустые группы допустимы.
-
-`tickets.docx`: используйте обычные абзацы, например:
-
-```text
-Билет 1
-1. Первый вопрос
-2. Второй вопрос
-3. Третий вопрос
-
-Билет 2
-1. Первый вопрос второго билета
-2. Второй вопрос второго билета
-3. Третий вопрос второго билета
+```powershell
+py create_demo_data.py --data-dir demo
 ```
 
-Поддерживаются также стандартные нумерованные списки Word. Билеты с менее чем тремя вопросами и блоки с заголовком вида `Билет №2` пропускаются; ошибки записываются в `app.log`. Из билета с дополнительными вопросами показываются первые три. Номера корректных билетов сохраняются как в Word; случайный выбор выполняется среди корректных билетов. Вопросы в таблицах и текстовых полях не поддерживаются.
+You can also click the **`🧪 Demo Files`** button directly in the application header.
 
-`results.xlsx` создаётся при первом запуске. Заголовки A–F: «Группа», «Фамилия», «Имя», «Номер билета», «Дата и время», «Повтор (да/нет)». Время сохраняется как дата Excel по локальным часам компьютера. Каждый успешный вызов дописывает строку в конец. Существующие значения остаются прежними; файл сохраняется целиком через временный файл и атомарную замену.
+## Usage Guide
 
-При блокировке журнала закройте его в Excel и нажмите «Повторить»; «Отмена» возвращает к выбору. Отсутствующие или повреждённые источники показывают сообщение; исправьте их и нажмите «Перезагрузить файлы». Если ранее выданный билет удалён, восстановите его и перезагрузите источники: приложение не назначает новый номер вместо старого. Некорректный журнал не перезаписывается. Запускайте один экземпляр приложения на одну папку данных; не редактируйте журнал вручную во время работы.
+1. **Select Academic Group**: Choose a group from the dropdown. The student list and progress metrics will update automatically.
+2. **Select Student**: Use the search field to filter names or select directly from the dropdown. The candidate profile card displays their previous exam status.
+3. **Generate Ticket**: Click **«Сгенерировать экзаменационный билет»** (or press `Enter`). The assignment is safely persisted to `results.xlsx` before the ticket window appears.
+4. **View Ticket**: The ticket window displays the student's identity, ticket number, and three examination questions. You can copy the ticket to the clipboard or export it to `.txt`.
+5. **Next Student**: Press `Esc` or close the window. The application resets the selection and immediately returns focus to the student selector.
 
-## Проверка
+### Business Rules & Repeat Policy
+
+- A student is uniquely identified by the tuple `(Group, Surname, Name)`.
+- If a student has already received a ticket, the application reuses the exact ticket number from the **first** entry in `results.xlsx` and appends a new record marked with `да`.
+- For new students, a ticket is chosen uniformly at random from the set of valid tickets and appended with `нет`.
+- Previous records are immutable and append-only.
+
+## File Specifications
+
+- `students.xlsx`: Each sheet represents an academic group (sheet title = group name). Row 1 contains column headers; row 2 onward contains Column A (`Фамилия` / Surname) and Column B (`Имя` / Name). Blank rows are skipped; incomplete rows are logged and ignored. Empty groups are supported.
+- `tickets.docx`: Each ticket starts with a standalone paragraph `Билет N` (where N is a positive integer), followed by three numbered paragraphs `1. Question`, `2. Question`, `3. Question`. Word native numbered lists (`List Number`) are supported. Blocks with fewer than 3 questions or malformed headings are skipped and logged to `app.log`.
+- `results.xlsx`: Created automatically on the first run. Columns A–F: `Группа`, `Фамилия`, `Имя`, `Номер билета`, `Дата и время`, `Повтор (да/нет)`. Timestamps are saved as native Excel dates.
+- **File Locking**: If `results.xlsx` is open and locked in Excel, the app shows a `Retry / Cancel` dialog. Retrying saves the exact pending record without re-randomizing or losing data.
+
+## Running Tests
+
+Run the comprehensive unit and integration test suite:
 
 ```powershell
 py -m unittest discover -s tests -v
 ```
 
-Тесты создают свои временные документы и не меняют рабочие файлы. Tk-тест проверяет выбор, сохранение и Esc; при отсутствии рабочего Tk/дисплея он явно пропускается. Блокировка записи моделируется в unit-тесте; дополнительно проверьте её вручную, открыв рабочий журнал в Excel перед генерацией.
+The tests verify Word parsing, group handling, empty groups, idempotent repeat assignments, file lock recovery, atomic file replacements, and Tkinter GUI events in isolated temporary directories.
 
-Для ручной приёмки проверьте пустую группу, выдачу двум студентам, повтор первого студента, Esc, рост числа строк журнала, перезапуск приложения, отсутствующий входной файл и заблокированный журнал.
+## Project Structure
 
-## Структура и работа с Copilot
+- `main.py` — Application entry point and CLI argument parser.
+- `ticket_generator/core.py` — Data models (`Student`, `Ticket`), XLSX/DOCX parsers, and atomic `ResultJournal`.
+- `ticket_generator/gui.py` — Modern Tkinter/ttk user interface, themes, and interactive dashboard.
+- `create_demo_data.py` — Safe generator of demonstration datasets.
+- `tests/` — Automated test suite (`test_core.py`, `test_gui.py`).
+- `COPILOT_PROMPT.md` — Detailed technical specification.
 
-- `COPILOT_PROMPT.md` — подробное ТЗ на английском для шага Prompt Engineering.
-- `ticket_generator/core.py` — модели, парсинг и назначение/журнал.
-- `ticket_generator/gui.py` — интерфейс и сообщения.
-- `tests/` — unit-тесты и проверка Tk.
+## Version Control
 
-ТЗ можно передать Copilot Chat; для дальнейших правок используйте Ctrl+I, для расширения тестов — `/tests`. Эти действия в VS Code выполняются студентом; исходники и тесты в этой папке уже подготовлены.
-
-## Контроль версий
-
-Рабочая ветка лабораторной: `lab2-ui-tickets`. После настройки удалённого репозитория:
+Working branch: `lab2-ui-tickets`.
 
 ```powershell
 git add .
 git commit -m "Lab 2: UI-генератор билетов"
 git push -u origin lab2-ui-tickets
 ```
-
-Журнал результатов и лог исключены из Git. Демонстрационные входные файлы входят в проект; реальные персональные данные не добавляйте в публичный репозиторий.
