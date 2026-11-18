@@ -1009,7 +1009,7 @@ class TicketApp:
 
         window.bind("<Escape>", close)
         window.protocol("WM_DELETE_WINDOW", close)
-        window.focus_set()
+        window.focus_force()
 
     def open_data_folder(self):
         open_system_path(self.data_dir)
